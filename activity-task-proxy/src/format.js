@@ -11,14 +11,14 @@ export function normalizeResult(value) {
     modules: modules
       .filter((module) => module && typeof module === "object")
       .map((module) => ({
-        name: MODULES.has(module.name) ? module.name : "其他",
+        name: inferModuleName(module),
         tasks: Array.isArray(module.tasks) ? module.tasks
           .filter((task) => task && typeof task === "object" && String(task.title || "").trim())
           .map((task) => ({
             title: String(task.title).trim(),
             detail: String(task.detail || "").trim(),
-            owner: String(task.owner || "").trim(),
-            deadline: String(task.deadline || "").trim(),
+            owner: cleanOwner(task.owner),
+            deadline: cleanDeadline(task.deadline),
             related_object: String(task.related_object || "").trim(),
             notes: String(task.notes || "").trim(),
             priority: String(task.priority || "").trim(),
@@ -27,6 +27,25 @@ export function normalizeResult(value) {
       }))
       .filter((module) => module.tasks.length > 0)
   };
+}
+
+function cleanOwner(value) {
+  const owner = String(value || "").trim();
+  return /未命名项目|未命名|项目负责人/.test(owner) ? "" : owner;
+}
+
+function cleanDeadline(value) {
+  const deadline = String(value || "").trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(deadline) ? deadline : "";
+}
+
+function inferModuleName(module) {
+  const name = String(module?.name || "").trim();
+  const taskText = (Array.isArray(module?.tasks) ? module.tasks : [])
+    .map((task) => `${task?.title || ""} ${task?.detail || ""} ${task?.related_object || ""}`)
+    .join(" ");
+  if (/酒店|住宿|房间|入住/.test(`${name} ${taskText}`)) return "酒店";
+  return MODULES.has(name) ? name : "其他";
 }
 
 export function toAppleNotesMarkdown(result) {
