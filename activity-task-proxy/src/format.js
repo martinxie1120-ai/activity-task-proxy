@@ -54,7 +54,7 @@ export function toAppleNotesMarkdown(result) {
     lines.push(module.name);
     for (const task of module.tasks) {
       lines.push(`○ ${task.title}`);
-      if (task.detail) lines.push(`- ${task.detail}`);
+      if (shouldShowDetail(task.title, task.detail)) lines.push(`- ${task.detail}`);
       if (task.owner) lines.push(`- 负责人：${task.owner}`);
       if (task.deadline) lines.push(`- Deadline：${task.deadline}`);
       if (task.related_object) lines.push(`- 涉及对象：${task.related_object}`);
@@ -64,6 +64,13 @@ export function toAppleNotesMarkdown(result) {
     lines.push("");
   }
   return lines.join("\n").trim();
+}
+
+function shouldShowDetail(title, detail) {
+  const normalizedTitle = String(title || "").replace(/[\s，。；：、,.!?！？]/g, "");
+  const normalizedDetail = String(detail || "").replace(/[\s，。；：、,.!?！？]/g, "");
+  if (!normalizedDetail || normalizedDetail === normalizedTitle) return false;
+  return true;
 }
 
 export function extractJson(text) {
