@@ -49,17 +49,19 @@ function inferModuleName(module) {
 }
 
 export function toAppleNotesMarkdown(result) {
-  const lines = [`# ${result.project}执行清单`, ""];
+  const lines = [];
   for (const module of result.modules) {
-    lines.push(`## ${module.name}`, "");
+    lines.push(module.name);
     for (const task of module.tasks) {
-      lines.push(`☐ ${task.title}`, "", "说明：", `- ${task.detail || ""}`);
-      lines.push("", "负责人：", `- ${task.owner || ""}`);
-      lines.push("", "Deadline：", `- ${task.deadline || ""}`);
-      lines.push("", "涉及对象：", `- ${task.related_object || ""}`);
-      if (task.notes) lines.push("", "备注：", `- ${task.notes}`);
+      lines.push(`○ ${task.title}`);
+      if (task.detail) lines.push(`- ${task.detail}`);
+      if (task.owner) lines.push(`- 负责人：${task.owner}`);
+      if (task.deadline) lines.push(`- Deadline：${task.deadline}`);
+      if (task.related_object) lines.push(`- 涉及对象：${task.related_object}`);
+      if (task.notes) lines.push(`- 备注：${task.notes}`);
       lines.push("");
     }
+    lines.push("");
   }
   return lines.join("\n").trim();
 }
