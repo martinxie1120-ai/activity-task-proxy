@@ -70,6 +70,7 @@ function shouldShowDetail(title, detail) {
   const normalizedTitle = String(title || "").replace(/[\s，。；：、,.!?！？]/g, "");
   const normalizedDetail = String(detail || "").replace(/[\s，。；：、,.!?！？]/g, "");
   if (!normalizedDetail || normalizedDetail === normalizedTitle) return false;
+  if (normalizedDetail.includes(normalizedTitle) || normalizedTitle.includes(normalizedDetail)) return false;
   return true;
 }
 
